@@ -130,6 +130,11 @@ class StackMobUtilityScript
       opts.on( '-M', '--method method', 'Custom method action, combine with --json if necessary' ) do |method|
         @options[:method] = method
       end
+      
+      @options[:console] = nil
+      opts.on( '--console', 'Run an interactive console, similar to the ActiveRecord console') do |method|
+        @options[:console] = true
+      end
 
       @options[:json] = nil
       opts.on( '-j', '--json file-or-string', 'JSON file or string containing the request params or model properties' ) do |file_or_string|
@@ -249,7 +254,14 @@ class StackMobUtilityScript
 
     sm = StackMob::Oauth.new(config, @options[:deployment], @options[:version], @options[:verbose])
 
-    if @options[:listapi]
+    if @options[:console]
+      sm_console = Stackmob::Console.new(sm)
+      puts "Welcome to the Stackmob Console. Press ctrl-C or type 'exit' to quit"
+      while(true)
+        cmd = gets.chomp
+        sm_console.process(cmd).call
+      end
+    elsif @options[:listapi]
       result = sm.get 'listapi'
       dump_results(result)
     elsif method = @options[:method]
