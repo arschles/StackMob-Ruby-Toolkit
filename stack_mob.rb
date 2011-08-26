@@ -6,6 +6,7 @@ require 'rubygems'
 $LOAD_PATH << File.dirname(__FILE__)
 require 'stack_mob/config'
 require 'stack_mob/oauth'
+require 'stack_mob/console'
 
 #require 'ruby-debug'
 require "pp"
@@ -131,8 +132,8 @@ class StackMobUtilityScript
         @options[:method] = method
       end
       
-      @options[:console] = nil
-      opts.on( '--console', 'Run an interactive console, similar to the ActiveRecord console') do |method|
+      @options[:console] = false
+      opts.on( '--console', 'Run an interactive console, similar to the ActiveRecord console') do
         @options[:console] = true
       end
 
@@ -234,8 +235,8 @@ class StackMobUtilityScript
   end
   
   def run
-    unless @options.any_key? [:model,:listapi,:method,:push]
-      puts "Not enough options specified. Need -m, -M or -l at minimum. Try -h"
+    unless @options.any_key? [:model,:listapi,:method,:push,:console]
+      puts "Not enough options specified. Need --console, -m, -M or -l at minimum. Try -h"
       exit
     end
 
@@ -255,12 +256,8 @@ class StackMobUtilityScript
     sm = StackMob::Oauth.new(config, @options[:deployment], @options[:version], @options[:verbose])
 
     if @options[:console]
-      sm_console = Stackmob::Console.new(sm)
-      puts "Welcome to the Stackmob Console. Press ctrl-C or type 'exit' to quit"
-      while(true)
-        cmd = gets.chomp
-        sm_console.process(cmd).call
-      end
+      sm_console = StackMob::Console.new(sm)
+      sm_console.run
     elsif @options[:listapi]
       result = sm.get 'listapi'
       dump_results(result)
