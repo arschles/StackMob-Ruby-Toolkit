@@ -68,9 +68,10 @@ module StackMob
         #TODO: check for shitloads of objects and warn if too many
         json_proc(@client.get(model_name, :model_id => :all))
       when "method"
-        return error_proc("usage: method <method_name> <json>") if str_split.count < 3
+        return error_proc("usage: method <method_name> <json (optional)>") if str_split.count < 2
         method_name = str_split[1]
-        json = str_split.drop(2).join(" ")
+        json = "{}"
+        json = str_split.drop(2).join(" ") if str_split.count >= 3
         begin
           parsed = JSON.parse(json)
         rescue
