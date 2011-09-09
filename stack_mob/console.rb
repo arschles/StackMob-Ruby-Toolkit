@@ -49,6 +49,7 @@ module StackMob
     end
         
     def process(str)
+      return Proc.new {""} if str.strip == ""
       str_split = str.split(' ')
       return error_proc("unrecognized command #{cmd}") if str_split.count < 1
       cmd = str_split[0]
