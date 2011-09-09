@@ -34,6 +34,18 @@ The --json options also takes inline json:
 
     $ ruby stack_mob.rb -m user -c --json '{"login":"alice","password","s3cr3t"}'
 
+There's also a rudimentary interactive console that you can use. Run
+
+	ruby stack_mob.rb --console
+
+to get the console. It doesn't support many commands yet, but the list is growing. Eventually,
+I want to implement something like the ActiveRecord console but for stackmob data. Here are the supported commands:
+
+* exit - what it sounds like
+* getall <model> - get all objects of the given model name
+* listapi - dump app API
+* method <method_name> <json> - call a custom method on the server. <json> is optional 
+
 ## Requires
 
 Ruby gems: json, oauth

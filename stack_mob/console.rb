@@ -21,7 +21,13 @@ module StackMob
     def run
       puts "Welcome to the Stackmob Console. Press ctrl-C or type 'exit' to quit"
       while line = Readline.readline('stackmob> ', true)
-        puts self.process(line).call
+        begin
+          puts self.process(line).call
+        rescue SystemExit => e
+          exit
+        rescue Exception => e
+          puts "error: #{e}"
+        end
       end
     end
     
@@ -32,8 +38,7 @@ module StackMob
     
     def error_proc(msg)
       Proc.new {
-        puts "error: #{msg}"
-        exit
+        "error: #{msg}"
       }
     end
     
@@ -42,7 +47,7 @@ module StackMob
         JSON.pretty_generate(hash)
       }
     end
-    
+        
     def process(str)
       str_split = str.split(' ')
       return error_proc("unrecognized command #{cmd}") if str_split.count < 1
@@ -73,7 +78,6 @@ module StackMob
         end
         json_proc(@client.get(method_name, :json => json))
       else
-        
         Proc.new { puts "unrecognized command #{cmd}"}
       end
     end
