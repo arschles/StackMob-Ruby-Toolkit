@@ -252,7 +252,7 @@ class StackMobUtilityScript
     
     puts "Using config: #{@options[:config]}" if @options[:verbose]
     config = StackMob::Config.new( File.join(@options[:config]) )
-
+    
     sm = StackMob::Oauth.new(config, @options[:deployment], @options[:version], @options[:verbose])
 
     if @options[:console]

@@ -5,7 +5,6 @@ module StackMob
 
     def initialize(configfile)
       super
-
       config = {}
       File.open(configfile, 'r') do |file|
         config = JSON.parse file.readlines.join

@@ -9,10 +9,11 @@ module StackMob
     def initialize(config, deployment, version, debug = false)
       @appname = config["application"]
       @version = version
+      @base_url = "stackmob.com"
+      @base_url = config["base_url"] if config.has_key? "base_url"
+      puts "using url #{@base_url}"
 
-      @consumer = OAuth::Consumer.new(config[deployment]["key"], config[deployment]["secret"], {
-          :site => "http://#{config["account"]}.stackmob.com"
-          })
+      @consumer = OAuth::Consumer.new config[deployment]["key"], config[deployment]["secret"], :site => "http://#{config["account"]}.#{@base_url}"
 
       @consumer.http.set_debug_output($stderr) if debug
 
@@ -50,6 +51,7 @@ module StackMob
     def request(method, model, opts={})
       # TODO conceptually clean up this nuttiness before origin push
       path = model == :push ? push_path : model_path(method, model, opts)
+      puts path
 
       headers = {}
       headers['Content-type'] = 'application/json' if opts[:json]

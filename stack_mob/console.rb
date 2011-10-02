@@ -8,7 +8,6 @@ module StackMob
     #this is copied from StackMob::Oauth. really should be factored into common superclass
     def initialize(stackmob_client)
       @client = stackmob_client
-      @listapi = @client.get 'listapi'
       #TODO: represent all the data models as ruby objects somehow. possibly do code generation (I think that's what ActiveRecord does)?
       #code gen might not be too tough for the crud methods, given that it would be much easier to create a single class that can understand any schema
       #and automatically provide the crud methods with type checking. then, code generation would simply be a matter of generating a class for each of the models
@@ -27,6 +26,7 @@ module StackMob
           exit
         rescue Exception => e
           puts "error: #{e}"
+          puts e.backtrace
         end
       end
     end
@@ -68,6 +68,15 @@ module StackMob
         model_name = str_split[1]
         #TODO: check for shitloads of objects and warn if too many
         json_proc(@client.get(model_name, :model_id => :all))
+      when "register_push_token"
+        valid_token_types = Set.new ["android", "ios"]
+        return error_proc("usage: register_push_token <token> <token_type> <username>") if str_split.count < 4
+        token = str_split[1]
+        token_type = str_split[2]
+        return error_proc("token type must be one of " + valid_token_types) if not valid_token_types.include? token_type.downcase
+        username = str_split[3]
+        
+        json_proc(@client.get("/push/register_token_type", :token => {:token => token, :type => token_type}, :userId => username))
       when "method"
         return error_proc("usage: method <method_name> <json (optional)>") if str_split.count < 2
         method_name = str_split[1]
@@ -80,7 +89,7 @@ module StackMob
         end
         json_proc(@client.get(method_name, :json => json))
       else
-        Proc.new { puts "unrecognized command #{cmd}"}
+        error_proc("unrecognized command #{cmd}")
       end
     end
   end
