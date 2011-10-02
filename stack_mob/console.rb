@@ -2,6 +2,7 @@ require 'rubygems'
 require 'oauth'
 require "json"
 require 'readline'
+require 'set'
 
 module StackMob
   class Console
@@ -76,7 +77,7 @@ module StackMob
         return error_proc("token type must be one of " + valid_token_types) if not valid_token_types.include? token_type.downcase
         username = str_split[3]
         
-        json_proc(@client.get("/push/register_token_type", :token => {:token => token, :type => token_type}, :userId => username))
+        json_proc(@client.get("push/register_device_token_universal", :token => {:token => token, :type => token_type}, :userId => username))
       when "method"
         return error_proc("usage: method <method_name> <json (optional)>") if str_split.count < 2
         method_name = str_split[1]
